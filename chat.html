@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>چت‌روم امن</title>
+  <style>
+    body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    #login, #chat { background: white; padding: 20px; border-radius: 10px; width: 100%; max-width: 400px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    #chat { display: none; flex-direction: column; height: 80vh; }
+    #messages { flex-grow: 1; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; background: #fff; border-radius: 6px; }
+    .message { margin: 5px 0; }
+    .sent { text-align: right; color: #2563eb; }
+    input, button { padding: 10px; margin-top: 10px; width: 100%; border: 1px solid #ccc; border-radius: 5px; }
+    button { background: #2563eb; color: white; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div id="login">
+    <h2>ورود به چت‌روم</h2>
+    <input type="text" id="username" placeholder="نام شما">
+    <input type="password" id="roomPassword" placeholder="رمز ورود">
+    <button onclick="login()">ورود</button>
+  </div>
+
+  <div id="chat">
+    <h3>چت‌روم</h3>
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="پیام خود را بنویسید...">
+    <input type="file" id="fileInput">
+    <button onclick="sendMessage()">ارسال</button>
+  </div>
+
+  <script>
+    const realPassword = "amiralimaryam138580";
+    let username = "";
+
+    function login() {
+      username = document.getElementById("username").value.trim();
+      const enteredPassword = document.getElementById("roomPassword").value.trim();
+      if (!username || enteredPassword !== realPassword) {
+        alert("نام یا رمز اشتباه است.");
+        return;
+      }
+      document.getElementById("login").style.display = "none";
+      document.getElementById("chat").style.display = "flex";
+    }
+
+    function sendMessage() {
+      const messageInput = document.getElementById("messageInput");
+      const fileInput = document.getElementById("fileInput");
+      const messages = document.getElementById("messages");
+      const text = messageInput.value.trim();
+      const file = fileInput.files[0];
+
+      if (!text && !file) return;
+
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message", "sent");
+      msgDiv.innerHTML = `<strong>${username}:</strong> `;
+
+      if (text) msgDiv.innerHTML += text;
+
+      if (file) {
+        const url = URL.createObjectURL(file);
+        const type = file.type;
+        if (type.startsWith("image/")) msgDiv.innerHTML += `<br><img src="${url}" style="max-width:100%">`;
+        else if (type.startsWith("video/")) msgDiv.innerHTML += `<br><video src="${url}" controls style="max-width:100%"></video>`;
+        else if (type.startsWith("audio/")) msgDiv.innerHTML += `<br><audio src="${url}" controls></audio>`;
+        else msgDiv.innerHTML += `<br><a href="${url}" download>دانلود فایل</a>`;
+      }
+
+      messages.appendChild(msgDiv);
+      messageInput.value = "";
+      fileInput.value = "";
+      messages.scrollTop = messages.scrollHeight;
+    }
+  </script>
+</body>
+</html>

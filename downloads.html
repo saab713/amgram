@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SMgram - دانلود فایل‌ها</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f2f2f2;
+      margin: 0; padding: 20px;
+      color: #333;
+    }
+    #download-box {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.15);
+    }
+    h2 {
+      margin-top: 0;
+    }
+    #file-list {
+      list-style: none;
+      padding: 0;
+    }
+    #file-list li {
+      margin-bottom: 10px;
+      background: #e5e7eb;
+      padding: 10px 15px;
+      border-radius: 8px;
+    }
+    #file-list li a {
+      text-decoration: none;
+      color: #2563eb;
+      font-weight: 600;
+    }
+    #error-msg {
+      color: red;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="download-box">
+    <h2>فایل‌های قابل دانلود</h2>
+    <div id="error-msg"></div>
+    <ul id="file-list"></ul>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <script>
+    const downloadPassword = sessionStorage.getItem("downloadPassword");
+
+    // رمز بخش دانلود صحیح (مثلا این رو عوض کن با چیزی که میخوای)
+    const correctDownloadPassword = "yourDownloadPass123";
+
+    const errorMsg = document.getElementById("error-msg");
+    const fileList = document.getElementById("file-list");
+
+    if (!downloadPassword) {
+      errorMsg.textContent = "لطفاً ابتدا رمز بخش دانلود را وارد کنید.";
+    } else if (downloadPassword !== correctDownloadPassword) {
+      errorMsg.textContent = "رمز وارد شده اشتباه است.";
+    } else {
+      // رمز درست است، فایل‌ها را بارگذاری کن
+      const app = firebase.app();
+      const storage = firebase.storage();
+
+      const storageRef = storage.ref().child('downloadFiles/');
+
+      // لیست کردن فایل‌ها (Firebase Storage API محدودیت دارد و نمی‌توان فایل‌ها را به راحتی لیست کرد)
+      // بنابراین باید نام فایل‌ها را در یک جایی مثل Firestore ذخیره کنی یا نام‌ها را دستی تعریف کنی.
+
+      // برای نمونه، من لیستی از فایل‌ها را دستی می‌گذارم:
+      const files = [
+        { name: "example.pdf", path: "downloadFiles/example.pdf" },
+        { name: "image1.jpg", path: "downloadFiles/image1.jpg" },
+        { name: "video1.mp4", path: "downloadFiles/video1.mp4" }
+      ];
+
+      files.forEach(async file => {
+        try {
+          const fileRef = storage.ref(file.path);
+          const url = await fileRef.getDownloadURL();
+
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = url;
+          a.target = "_blank";
+          a.textContent = file.name;
+          li.appendChild(a);
+          fileList.appendChild(li);
+        } catch (err) {
+          console.error("Error loading file URL:", err);
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

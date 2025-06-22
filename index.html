@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SMgram - ورود</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="login-box">
+    <h2>خوش آمدید به SMgram</h2>
+    <p>برای چت، نام خود، شناسه روم و رمز را وارد کنید.</p>
+
+    <input type="text" id="username-input" placeholder=" your name  " autocomplete="off" />
+    <input type="text" id="room-input" placeholder=" Room ID" autocomplete="off" />
+    <input type="password" id="password-input" placeholder="password" autocomplete="off" />
+    <button id="join-btn">ورود به چت‌روم</button>
+
+    <hr style="margin: 20px 0;" />
+
+    <input type="password" id="download-pass-input" placeholder="download box password" autocomplete="off" />
+    <button id="download-btn">دسترسی به دانلود فایل‌ها</button>
+  </div>
+
+  <!-- لود Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
+
+  <!-- پیکربندی Firebase -->
+  <script src="firebase-config.js"></script>
+
+  <script>
+    // هشدار اگر firebase-config.js بارگذاری نشود
+    window.addEventListener('error', function(event) {
+      if(event.filename && event.filename.includes('firebase-config.js')) {
+        alert('خطا در بارگذاری firebase-config.js. لطفاً فایل را بررسی کنید.');
+      }
+    });
+
+    document.getElementById("join-btn").addEventListener("click", () => {
+      const username = document.getElementById("username-input").value.trim();
+      const roomId = document.getElementById("room-input").value.trim();
+      const password = document.getElementById("password-input").value.trim();
+
+      if (!username || !roomId || !password) {
+        alert("لطفاً همه فیلدها را پر کنید.");
+        return;
+      }
+
+      // اینجا می‌توانی بررسی رمز اتاق را از سمت سرور یا دیتابیس انجام دهی
+      // فعلاً فقط ذخیره می‌کنیم و وارد صفحه چت می‌شویم
+      sessionStorage.setItem("username", username);
+      sessionStorage.setItem("roomId", roomId);
+      sessionStorage.setItem("roomPassword", password);
+      window.location.href = "chat.html";
+    });
+
+    document.getElementById("download-btn").addEventListener("click", () => {
+      const downloadPass = document.getElementById("download-pass-input").value.trim();
+      if (!downloadPass) {
+        alert("لطفاً رمز بخش دانلود را وارد کنید.");
+        return;
+      }
+      sessionStorage.setItem("downloadPassword", downloadPass);
+      window.location.href = "downloads.html";
+    });
+  </script>
+
+</body>
+</html>
